@@ -2,6 +2,7 @@ module mux-rest-api
 
 go 1.17
 
+<<<<<<< HEAD
 require (
 	cloud.google.com/go v0.97.0 // indirect
 	cloud.google.com/go/firestore v1.6.1 // indirect
@@ -22,3 +23,6 @@ require (
 	google.golang.org/grpc v1.40.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
+=======
+require github.com/gorilla/mux v1.8.0
+>>>>>>> firebase-repo
