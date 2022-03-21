@@ -7,6 +7,7 @@ import (
 	"mux-rest-api/repository"
 	"mux-rest-api/service"
 	"net/http"
+	"os"
 )
 
 var (
@@ -17,7 +18,7 @@ var (
 )
 
 func main() {
-	const port string = ":8080"
+	//const port string = ":8080"
 
 	httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Up and running...")
@@ -25,6 +26,6 @@ func main() {
 	httpRouter.GET("/posts", postController.GetPosts)
 	httpRouter.POST("/posts", postController.AddPost)
 
-	httpRouter.SERVE(port)
+	httpRouter.SERVE(os.Getenv("PORT"))
 
 }
