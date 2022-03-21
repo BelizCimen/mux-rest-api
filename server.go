@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"mux-rest-api/controller"
 	router "mux-rest-api/http"
+	"mux-rest-api/repository"
+	"mux-rest-api/service"
 	"net/http"
 )
 
 var (
-	postController controller.PostController = controller.NewPostController()
+	postRepository repository.PostRepository = repository.NewFirestoreRepository()
+	postService    service.PostService       = service.NewPostService(postRepository)
+	postController controller.PostController = controller.NewPostController(postService)
 	httpRouter     router.Router             = router.NewChiRouter()
 )
 
