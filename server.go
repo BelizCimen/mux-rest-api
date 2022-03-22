@@ -18,11 +18,11 @@ var (
 )
 
 func main() {
-
 	httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Up and running...")
 	})
 	httpRouter.GET("/posts", postController.GetPosts)
+	httpRouter.GET("/posts/{id}", postController.GetPostsByID)
 	httpRouter.POST("/posts", postController.AddPost)
 
 	httpRouter.SERVE(os.Getenv("PORT"))
