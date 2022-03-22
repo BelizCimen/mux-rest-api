@@ -5,12 +5,14 @@ import (
 	"math/rand"
 	"mux-rest-api/entity"
 	"mux-rest-api/repository"
+	"strconv"
 )
 
 type PostService interface {
 	Validate(post *entity.Post) error
 	Create(post *entity.Post) (*entity.Post, error)
 	FindAll() ([]entity.Post, error)
+	FindByID(id int64) (*entity.Post, error)
 }
 
 type service struct{}
@@ -26,12 +28,12 @@ func NewPostService(postRepo repository.PostRepository) PostService {
 
 func (*service) Validate(post *entity.Post) error {
 	if post == nil {
-		err := errors.New("The post is empty")
+		err := errors.New("the post is empty")
 		return err
 	}
 
 	if post.Title == "" {
-		err := errors.New("The post title is empty")
+		err := errors.New("the post title is empty")
 		return err
 	}
 
@@ -45,4 +47,12 @@ func (*service) Create(post *entity.Post) (*entity.Post, error) {
 
 func (*service) FindAll() ([]entity.Post, error) {
 	return repo.FindAll()
+}
+
+func (*service) FindByID(id int64) (*entity.Post, error) {
+	_, err := strconv.ParseInt(string(id), 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return repo.FindByID(id)
 }

@@ -6,6 +6,8 @@ import (
 	"mux-rest-api/errors"
 	"mux-rest-api/service"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type controller struct{}
@@ -17,6 +19,7 @@ var (
 type PostController interface {
 	GetPosts(response http.ResponseWriter, request *http.Request)
 	AddPost(response http.ResponseWriter, request *http.Request)
+	GetPostsByID(response http.ResponseWriter, request *http.Request)
 }
 
 func NewPostController(service service.PostService) PostController {
@@ -34,6 +37,22 @@ func (*controller) GetPosts(response http.ResponseWriter, request *http.Request)
 	}
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(posts)
+}
+func (*controller) GetPostsByID(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content Type", "application/json")
+	var postId string = strings.Split(request.URL.Path, "/")[2]
+	postID, err := strconv.ParseInt(postId, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	post, err := postService.FindByID(postID)
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(response).Encode(errors.ServiceError{Message: "no posts found"})
+	} else {
+		response.WriteHeader(http.StatusOK)
+		json.NewEncoder(response).Encode(post)
+	}
 }
 
 func (*controller) AddPost(response http.ResponseWriter, request *http.Request) {

@@ -68,3 +68,25 @@ func (*repo) FindAll() ([]entity.Post, error) {
 	}
 	return posts, nil
 }
+
+func (*repo) FindByID(id int64) (*entity.Post, error) {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, projectId)
+	if err != nil {
+		log.Fatalf("Fail to create a firestore Client: %v", err)
+		return nil, err
+	}
+
+	defer client.Close()
+	dsnap, err := client.Collection(collectionName).Doc(string(id)).Get(ctx)
+	if err != nil {
+		println(err.Error())
+		return nil, err
+	}
+	post := &entity.Post{
+		ID:    dsnap.Data()["ID"].(int64),
+		Title: dsnap.Data()["Title"].(string),
+		Text:  dsnap.Data()["Text"].(string),
+	}
+	return post, nil
+}
