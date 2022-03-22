@@ -2,11 +2,11 @@ package controller
 
 import (
 	"encoding/json"
+	"mux-rest-api/cache"
 	"mux-rest-api/entity"
 	"mux-rest-api/errors"
 	"mux-rest-api/service"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -14,6 +14,7 @@ type controller struct{}
 
 var (
 	postService service.PostService
+	postCache   cache.PostCache
 )
 
 type PostController interface {
@@ -22,7 +23,8 @@ type PostController interface {
 	GetPostsByID(response http.ResponseWriter, request *http.Request)
 }
 
-func NewPostController(service service.PostService) PostController {
+func NewPostController(service service.PostService, cache cache.PostCache) PostController {
+	postCache = cache
 	postService = service
 	return &controller{}
 
@@ -40,19 +42,23 @@ func (*controller) GetPosts(response http.ResponseWriter, request *http.Request)
 }
 func (*controller) GetPostsByID(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content Type", "application/json")
-	var postId string = strings.Split(request.URL.Path, "/")[2]
-	postID, err := strconv.ParseInt(postId, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	post, err := postService.FindByID(postID)
-	if err != nil {
-		response.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(response).Encode(errors.ServiceError{Message: "no posts found"})
+	var postID = strings.Split(request.URL.Path, "/")[2]
+	var post = postCache.Get(postID)
+	if post == nil {
+		post, err := postService.FindByID(postID)
+		if err != nil {
+			response.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(response).Encode(errors.ServiceError{Message: "no posts found"})
+			return
+		}
+		postCache.Set(postID, post)
+		response.WriteHeader(http.StatusOK)
+		json.NewEncoder(response).Encode(post)
 	} else {
 		response.WriteHeader(http.StatusOK)
 		json.NewEncoder(response).Encode(post)
 	}
+
 }
 
 func (*controller) AddPost(response http.ResponseWriter, request *http.Request) {
