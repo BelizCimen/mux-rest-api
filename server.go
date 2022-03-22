@@ -18,7 +18,6 @@ var (
 )
 
 func main() {
-	//const port string = ":8080"
 
 	httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Up and running...")
