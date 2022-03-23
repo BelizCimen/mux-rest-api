@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"mux-rest-api/cache"
 	"mux-rest-api/controller"
 	router "mux-rest-api/http"
 	"mux-rest-api/repository"
@@ -11,9 +12,10 @@ import (
 )
 
 var (
+	postCache      cache.PostCache           = cache.NewRedisCache("localhost:6379", 1, 10)
 	postRepository repository.PostRepository = repository.NewFirestoreRepository()
 	postService    service.PostService       = service.NewPostService(postRepository)
-	postController controller.PostController = controller.NewPostController(postService)
+	postController controller.PostController = controller.NewPostController(postService, postCache)
 	httpRouter     router.Router             = router.NewChiRouter()
 )
 
