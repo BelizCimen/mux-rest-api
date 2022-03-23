@@ -5,6 +5,7 @@ import (
 	json2 "encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"mux-rest-api/cache"
 	"mux-rest-api/controller"
 	"mux-rest-api/entity"
 	"mux-rest-api/repository"
@@ -21,7 +22,8 @@ const (
 )
 
 var (
-	postController controller.PostController = controller.NewPostController(postService)
+	postCache      cache.PostCache           = cache.NewRedisCache("localhost:6379", 1, 10)
+	postController controller.PostController = controller.NewPostController(postService, postCache)
 	postService    service.PostService       = service.NewPostService(postRepository)
 	postRepository repository.PostRepository = repository.NewFirestoreRepository()
 )
