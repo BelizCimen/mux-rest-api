@@ -12,6 +12,11 @@ type MockRepository struct {
 	mock.Mock
 }
 
+func (mock *MockRepository) FindByID(id string) (*entity.Post, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 //Mocking repository Save method for calling on service
 func (mock *MockRepository) Save(post *entity.Post) (*entity.Post, error) {
 	args := mock.Called()
